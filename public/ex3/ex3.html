@@ -33,10 +33,125 @@
     </div>
     
     <script>
-        function getCategories() {
-            // Fetch categories from the server using Axios
+    // Load categories from server and populate dropdown
+    async function getCategories() {
+        try {
+            const res = await axios.get("http://localhost:3000/categories");
+            const categories = res.data; // array of strings
+            showCategories(categories);
+        } catch (err) {
+            console.error("Error fetching categories:", err);
+        }
+    }
+
+    function showCategories(categories) {
+        const select = document.getElementById("selectCategory");
+
+        // Keep first two default options: "To select" and "All"
+        while (select.options.length > 2) {
+            select.remove(2);
+        }
+
+        // Add categories from server
+        categories.forEach(cat => {
+            const option = document.createElement("option");
+            option.value = cat;       // category name
+            option.textContent = cat; // display name
+            select.appendChild(option);
+        });
+    }
+
+    // Load items based on selection
+    async function getItems() {
+        const select = document.getElementById("selectCategory");
+        const category = select.value;
+
+        if (category === "0") return; // "To select" chosen
+
+        let url = "http://localhost:3000/items";
+        if (category !== "all") {
+            url += `?category=${encodeURIComponent(category)}`;
+        }
+
+        try {
+            const res = await axios.get(url);
+            const items = res.data;
+            showItems(items);
+        } catch (err) {
+            console.error("Error fetching items:", err);
+        }
+    }
+
+    // Display items as Bootstrap cards
+    function showItems(items) {
+        const container = document.getElementById("itemsList");
+
+        // Clear previous items
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+
+        if (!items || items.length === 0) {
+            const p = document.createElement("p");
+            p.className = "text-center";
+            p.textContent = "No items";
+            container.appendChild(p);
+            return;
+        }
+
+        items.forEach(item => {
+            const col = document.createElement("div");
+            col.className = "col-lg-4 col-md-6 col-sm-12 mb-3";
+
+            const card = document.createElement("div");
+            card.className = "card h-100 shadow-sm";
+
+            const img = document.createElement("img");
+            img.className = "card-img-top";
+            img.src = item.image || "https://via.placeholder.com/150";
+            img.alt = item.name;
+
+            const cardBody = document.createElement("div");
+            cardBody.className = "card-body";
+
+            const cardTitle = document.createElement("h5");
+            cardTitle.className = "card-title";
+            cardTitle.textContent = item.name;
+
+            const cardText = document.createElement("p");
+            cardText.className = "card-text";
+            cardText.textContent = `Quantity: ${item.quantity}`;
+
+            const cardFooter = document.createElement("div");
+            cardFooter.className = "card-footer";
+
+            const priceSmall = document.createElement("small");
+            priceSmall.className = "text-muted";
+            priceSmall.textContent = `Price: $${item.price}`;
+
+            cardBody.appendChild(cardTitle);
+            cardBody.appendChild(cardText);
+            cardFooter.appendChild(priceSmall);
+
+            card.appendChild(img);
+            card.appendChild(cardBody);
+            card.appendChild(cardFooter);
+            col.appendChild(card);
+            container.appendChild(col);
+        });
+    }
+
+    // Load categories on DOMContentLoaded
+    window.addEventListener("DOMContentLoaded", async () => {
+        await getCategories();
+    });
+</script>
+
+        <!-- function getCategories() { -->
+            <!-- // Fetch categories from the server using Axios
             // and display them in the select element
             // url: http://localhost:3010/categories
+
 
         }
 
@@ -60,9 +175,9 @@
             // The display should be responsive 3 columns on large screens, 2 columns on medium screens, and 1 column on small screens
             
 
-        }
+        } -->
 
-    </script>
+    <!-- </script> -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
