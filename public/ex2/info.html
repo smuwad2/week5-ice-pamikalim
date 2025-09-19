@@ -44,12 +44,6 @@
                 while (resultDivElem.firstChild) {
                     resultDivElem.firstChild.remove();
                 }
-                
-                // Add validation to prevent errors if no records
-                if (!dataObj || !dataObj.records || dataObj.records.length === 0) {
-                    return;
-                }
-                
                 //create h2 element
                 const h2Elem = document.createElement("h2");
                 h2Elem.innerText = dataObj["type"];
@@ -96,11 +90,6 @@
                 tableElem.appendChild(tBodyElem);
                 resultDivElem.appendChild(tableElem);
             }
-
-            // Load initial data when page loads
-            window.addEventListener('DOMContentLoaded', function() {
-                getData();
-            });
         </script>
-    </body>
+</body>
 </html>
